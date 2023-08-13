@@ -1,37 +1,42 @@
 import numpy as np
 
-def epiline_in_image_one(essential_matrix, image_point_in_image_2, camera_matirx_1, camera_matirx_2):
+def epiline_in_image_one(essential_matrix, image_points_in_image_2, camera_matirx_1, camera_matirx_2):
+    """
+    Calculate epipolar lines in camera one for a points in camera two.
 
+    essential_matrix: numpy array 3 * 3
+    image_point_in_image_1: pixel coordinate in shape (N, 2)
+    camera_matirx_1: camera matrix in shape 3 * 3
+    """
     # convert point to homogeneous
-    img2_point = image_point_in_image_2.reshape((2, 1)) # 2*1
-    img2_point = np.concatenate((img2_point, np.ones(shape=(1,1))), axis=0) # 3*1
+    img2_points = np.concatenate((image_points_in_image_2.T, np.ones(shape=(1, image_points_in_image_2.shape[0]))), axis=0) # 3 * N
     
     # find ray that passess from origin of camera coordinate thorough point
-    point_ldr = np.dot(np.linalg.inv(camera_matirx_2), img2_point) # 3*1
+    points_ldr = np.dot(np.linalg.inv(camera_matirx_2), img2_points) # 3 * N
 
     # find epiline in the other image camera in homogeneous coordinate
-    line = np.dot(essential_matrix.T, point_ldr) # 3 * 1
-    epiline = np.dot(np.linalg.inv(camera_matirx_1.T), line)
+    lines = np.dot(essential_matrix.T, points_ldr) # 3 * N
+    epilines = np.dot(np.linalg.inv(camera_matirx_1.T), lines)
 
-    return epiline
+    return epilines
 
 
-def epiline_in_image_two(essential_matrix, image_point_in_image_1, camera_matirx_1, camera_matirx_2):
+def epiline_in_image_two(essential_matrix, image_points_in_image_1, camera_matirx_1, camera_matirx_2):
     """
-    essential_matrix: numpy array 3*3
-    image_point_in_image_1: pixel coordinate in shape (2, )
-    camera_matirx_1: camera matrix in shape 3*3
+    Calculate epipolar lines in camera one for a points in camera two.
+    
+    essential_matrix: numpy array 3 * 3
+    image_point_in_image_1: pixel coordinate in shape (N, 2)
+    camera_matirx_1: camera matrix in shape 3 * 3
     """
-
     # convert point to homogeneous
-    img1_point = image_point_in_image_1.reshape((2, 1))
-    img1_point = np.concatenate((img1_point, np.ones(shape=(1,1))), axis=0)
+    img1_points = np.concatenate((image_points_in_image_1.T, np.ones(shape=(1, image_points_in_image_1.shape[0]))), axis=0) # 3 * N
     
     # find ray that passess from origin of camera coordinate thorough point
-    point_ldr = np.dot(np.linalg.inv(camera_matirx_1), img1_point)
+    points_ldr = np.dot(np.linalg.inv(camera_matirx_1), img1_points) # 3 * N
 
     # find epiline in the other image camera in homogeneous coordinate
-    line = np.dot(essential_matrix, point_ldr)
-    epiline = np.dot(np.linalg.inv(camera_matirx_2.T), line)
+    lines = np.dot(essential_matrix, points_ldr) # 3 * N
+    epipolar_lines = np.dot(np.linalg.inv(camera_matirx_2.T), lines) # 3 * N
 
-    return epiline
+    return epipolar_lines

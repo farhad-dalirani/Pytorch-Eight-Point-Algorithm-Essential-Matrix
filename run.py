@@ -51,32 +51,42 @@ if __name__ == '__main__':
     print("Epipole in image 1:\n{}".format(results["epipole_img_1"]))
     print("Epipole in image 2:\n{}".format(results["epipole_img_2"])) 
 
-    # epipolar line of a point in the both image
-    point_number = 1
+
+    # select 8 corresponding points for showing result of finding essential matrix
+    img1_corr_points = matched_points_1[0:8]
+    img2_corr_points = matched_points_2[0:8]
+
+    # epipolar line of for some of the correspoinding points in the both image
     epiline_in_img2 = epiline_in_image_two(
                             essential_matrix=results["essential_matrix"],
-                            image_point_in_image_1=matched_points_1[point_number, :],
+                            image_points_in_image_1=img1_corr_points,
                             camera_matirx_1=camera_params_1['intrinsic_matrix'],
                             camera_matirx_2=camera_params_2['intrinsic_matrix'])
+
     epiline_in_img1 = epiline_in_image_one(
                             essential_matrix=results["essential_matrix"],
-                            image_point_in_image_2=matched_points_2[point_number, :],
+                            image_points_in_image_2=img2_corr_points,
                             camera_matirx_1=camera_params_1['intrinsic_matrix'],
                             camera_matirx_2=camera_params_2['intrinsic_matrix'])                     
 
     # draw epipolar lines for a pair of corresponding points in the both images
-    image_1_epiline = diplay_homogeneous_line_on_image(image=image_1, lines_hm=epiline_in_img1, point=matched_points_1[point_number, :])
-    image_2_epiline = diplay_homogeneous_line_on_image(image=image_2, lines_hm=epiline_in_img2, point=matched_points_2[point_number, :])
+    image_1_epiline = diplay_homogeneous_line_on_image(image=image_1, lines_hm=epiline_in_img1, points=img1_corr_points)
+    image_2_epiline = diplay_homogeneous_line_on_image(image=image_2, lines_hm=epiline_in_img2, points=img2_corr_points)
     img_1_2_epiline = np.concatenate((image_1_epiline, image_2_epiline), axis=1)
 
     # draw matches
     img3 = cv.drawMatches(image_1, img1_key, image_2, img2_key, matches, None, flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
-    plt.figure()
-    plt.imshow(img3)
+   
     plt.figure()
     plt.imshow(keypoint_on_image_1)
+    plt.title('Key features in the first image')
     plt.figure()
     plt.imshow(keypoint_on_image_2)
+    plt.title('Key features in the second image')
+    plt.figure()
+    plt.imshow(img3)
+    plt.title('Some of top best matched key features')
     plt.figure()
     plt.imshow(img_1_2_epiline)
+    plt.title('Epipolar lines on images for some corresponding key feature pairs.')
     plt.show()
