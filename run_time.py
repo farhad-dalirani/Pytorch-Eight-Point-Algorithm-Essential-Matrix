@@ -117,6 +117,7 @@ if __name__ == '__main__':
     plt.ylabel('Millisecond')
     plt.legend()
 
+    plt.figure()
     plt.plot([i for i in range(8, num_p+8)], execution_time_ms_cpu, label='pytorch-cpu')
     plt.plot([i for i in range(8, num_p+8)], execution_time_ms_gpu, label='pytorch-gpu')
     plt.plot([i for i in range(8, num_p+8)], execution_time_ms_lme, label='OpenCV-lme')
