@@ -1,15 +1,22 @@
+import torch
 import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt
 from key_feature import key_features_in_image, match_features_in_two_image
 from data_util import FountainDataset
-from normalized_8_point_algorithm import normalized_eight_point_essential_matrix
+from normalized_8_point_algorithm import eight_point_essential_matrix
 from calculate_epi_line import epiline_in_image_one, epiline_in_image_two
 from display_util import diplay_homogeneous_line_on_image
 
 
 if __name__ == '__main__':
     
+    # Check if CUDA (GPU) is available
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    else:
+        device = torch.device("cpu")
+
     # read input images
     dataset = FountainDataset(root_path='./data/')
     camera_params_1 = dataset.read_camera_parameters(pose_number=5)
@@ -30,23 +37,24 @@ if __name__ == '__main__':
 
     # keep first 20 percent of matches
     matches = all_matches[:int(len(all_matches) * 0.2)]
+    print("Number of kepted matches: {}".format(len(matches)))
 
     # matched points
     matched_points_1 = []
     matched_points_2 = []
-    for match in all_matches[0:8]:
+    for match in all_matches[0:460]:
         matched_points_1.append([img1_key[match.queryIdx].pt[0], img1_key[match.queryIdx].pt[1]])
         matched_points_2.append([img2_key[match.trainIdx].pt[0], img2_key[match.trainIdx].pt[1]])
     matched_points_1 = np.array(matched_points_1)
     matched_points_2 = np.array(matched_points_2)
 
     # find essential matrix by 8 point algorithm
-    results = normalized_eight_point_essential_matrix(
+    results = eight_point_essential_matrix(
                     img1_points=matched_points_1,
                     img2_points=matched_points_2,
                     camera_1_matrix=camera_params_1['intrinsic_matrix'],
                     camera_2_matrix=camera_params_2['intrinsic_matrix'],
-                    device='cpu')
+                    device=device)
     print("Essential Matrix:\n{}".format(results["essential_matrix"]))
     print("Epipole in image 1:\n{}".format(results["epipole_img_1"]))
     print("Epipole in image 2:\n{}".format(results["epipole_img_2"])) 

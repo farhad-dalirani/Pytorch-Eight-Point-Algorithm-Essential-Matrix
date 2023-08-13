@@ -1,8 +1,11 @@
 import torch
 import numpy as np
 
-def normalized_eight_point_essential_matrix(img1_points, img2_points, camera_1_matrix, camera_2_matrix, device='cpu'):
+def eight_point_essential_matrix(img1_points, img2_points, camera_1_matrix, camera_2_matrix, device='cpu'):
     """
+    The eight-point algorithm is used to compute the essential matrix from 
+    corresponding points in two images. N should be greater equal 8.
+
     img1_points: points on image 1, in shape of N * 2
     img2_points: points on image 2, in shape of N * 2
     camera_1_matrix, camera_2_matrix: camera matrix in form 3 * 3
@@ -19,7 +22,6 @@ def normalized_eight_point_essential_matrix(img1_points, img2_points, camera_1_m
     num_corresponding = img1_points.shape[0]
 
     with torch.no_grad():
-        # whiten
 
         # convert points to homogeneous
         img1_points_hmg = np.concatenate((img1_points, np.ones(shape=(num_corresponding, 1))), axis=1) # N * 3
@@ -45,7 +47,6 @@ def normalized_eight_point_essential_matrix(img1_points, img2_points, camera_1_m
         row_norms = torch.norm(img2_lrd, dim=1, keepdim=True)
         # Normalize each row by dividing by its norm
         img2_lrd = img2_lrd / row_norms
-
 
         # convert each correspoding local ray direction pair from
         # [x1, y1, 1] and [x2, y2, 1] to
@@ -76,7 +77,7 @@ def normalized_eight_point_essential_matrix(img1_points, img2_points, camera_1_m
         if ep_2[2] != 0:
             ep_2_normalized = ep_2 / ep_2[2]
 
-        return {"essential_matrix": E_rank2.numpy(), "epipole_img_1": ep_1_normalized.numpy(), "epipole_img_2": ep_2_normalized.numpy()}
+        return {"essential_matrix": E_rank2.cpu().numpy(), "epipole_img_1": ep_1_normalized.cpu().numpy(), "epipole_img_2": ep_2_normalized.cpu().numpy()}
 
 
 if __name__ == "__main__":
