@@ -31,22 +31,21 @@ def normalized_eight_point_essential_matrix(img1_points, img2_points, camera_1_m
         camera_1_matrix_tensor = torch.tensor(data=camera_1_matrix, dtype=torch.float32, device=device) # 3 * 3
         camera_2_matrix_tensor = torch.tensor(data=camera_2_matrix, dtype=torch.float32, device=device) # 3 * 3
 
-        # find local ray direction that passes in image 1
+        # find local ray direction that passes points in image 1
         # local ray direction = inverse of camera matrix * point on image in homogeneous 
         img1_lrd =  torch.matmul(camera_1_matrix_tensor.inverse(), img1_points_hmg.t()).t() # N * 3 
         # Calculate the norms of each row
         row_norms = torch.norm(img1_lrd, dim=1, keepdim=True)
         # Normalize each row by dividing by its norm
-        img1_lrd_normalized = img1_lrd / row_norms
-        img1_lrd = img1_lrd_normalized
+        img1_lrd = img1_lrd / row_norms
 
-        # find local ray direction that passes in image 2
+        # find local ray direction that passes points in image 2
         img2_lrd =  torch.matmul(camera_2_matrix_tensor.inverse(), img2_points_hmg.t()).t() # N * 3
         # Calculate the norms of each row
         row_norms = torch.norm(img2_lrd, dim=1, keepdim=True)
         # Normalize each row by dividing by its norm
-        img2_lrd_normalized = img2_lrd / row_norms
-        img2_lrd = img2_lrd_normalized
+        img2_lrd = img2_lrd / row_norms
+
 
         # convert each correspoding local ray direction pair from
         # [x1, y1, 1] and [x2, y2, 1] to
@@ -78,11 +77,6 @@ def normalized_eight_point_essential_matrix(img1_points, img2_points, camera_1_m
             ep_2_normalized = ep_2 / ep_2[2]
 
         return {"essential_matrix": E_rank2.numpy(), "epipole_img_1": ep_1_normalized.numpy(), "epipole_img_2": ep_2_normalized.numpy()}
-
-
-    
-    
-
 
 
 if __name__ == "__main__":

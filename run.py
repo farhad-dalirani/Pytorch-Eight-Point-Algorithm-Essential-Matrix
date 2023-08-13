@@ -49,17 +49,19 @@ if __name__ == '__main__':
                     device='cpu')
     print("Essential Matrix:\n{}".format(results["essential_matrix"]))
     print("Epipole in image 1:\n{}".format(results["epipole_img_1"]))
-    print("Epipole in image 2:\n{}".format(results["epipole_img_2"]))
+    print("Epipole in image 2:\n{}".format(results["epipole_img_2"])) 
 
     # epipolar line of a point in the both image
     point_number = 1
     epiline_in_img2 = epiline_in_image_two(
                             essential_matrix=results["essential_matrix"],
                             image_point_in_image_1=matched_points_1[point_number, :],
-                            camera_matirx_1=camera_params_1['intrinsic_matrix'])
+                            camera_matirx_1=camera_params_1['intrinsic_matrix'],
+                            camera_matirx_2=camera_params_2['intrinsic_matrix'])
     epiline_in_img1 = epiline_in_image_one(
                             essential_matrix=results["essential_matrix"],
                             image_point_in_image_2=matched_points_2[point_number, :],
+                            camera_matirx_1=camera_params_1['intrinsic_matrix'],
                             camera_matirx_2=camera_params_2['intrinsic_matrix'])                     
 
     # draw epipolar lines for a pair of corresponding points in the both images
