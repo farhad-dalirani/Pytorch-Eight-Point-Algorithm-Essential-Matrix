@@ -4,7 +4,7 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 from key_feature import key_features_in_image, match_features_in_two_image
 from data_util import FountainDataset
-from normalized_8_point_algorithm import eight_point_essential_matrix
+from eight_point_algorithm import eight_point_essential_matrix
 from calculate_epi_line import epiline_in_image_one, epiline_in_image_two
 from display_util import diplay_homogeneous_line_on_image
 
