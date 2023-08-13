@@ -42,7 +42,7 @@ if __name__ == '__main__':
     # matched points
     matched_points_1 = []
     matched_points_2 = []
-    for match in all_matches[0:460]:
+    for match in all_matches[0:20]:
         matched_points_1.append([img1_key[match.queryIdx].pt[0], img1_key[match.queryIdx].pt[1]])
         matched_points_2.append([img2_key[match.trainIdx].pt[0], img2_key[match.trainIdx].pt[1]])
     matched_points_1 = np.array(matched_points_1)
