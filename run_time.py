@@ -1,3 +1,4 @@
+import torch
 import time
 import numpy as np
 import cv2 as cv
@@ -38,6 +39,9 @@ if __name__ == '__main__':
     execution_time_ms_gpu = []
     execution_time_ms_ran = []
     execution_time_ms_lme = []
+
+    # Dummy operation to warm up the GPU
+    dummy_input = torch.zeros(1).cuda()
 
     for num_points in range(8, 2400):
         # matched points
@@ -112,4 +116,12 @@ if __name__ == '__main__':
     plt.xlabel('Number of corresponding points')
     plt.ylabel('Millisecond')
     plt.legend()
+
+    plt.plot([i for i in range(8, num_p+8)], execution_time_ms_cpu, label='pytorch-cpu')
+    plt.plot([i for i in range(8, num_p+8)], execution_time_ms_gpu, label='pytorch-gpu')
+    plt.plot([i for i in range(8, num_p+8)], execution_time_ms_lme, label='OpenCV-lme')
+    plt.xlabel('Number of corresponding points')
+    plt.ylabel('Millisecond')
+    plt.legend()
+
     plt.show()
