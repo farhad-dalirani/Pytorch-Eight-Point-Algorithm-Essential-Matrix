@@ -19,19 +19,19 @@ def eight_point_essential_matrix(img1_points, img2_points, camera_1_matrix, came
     if camera_1_matrix.shape[0] != 3 and camera_1_matrix.shape[1] != 3:
         raise ValueError('Inputed camera matrix is not correct.')
 
-    num_corresponding = img1_points.shape[0]
-
     with torch.no_grad():
-
-        # convert points to homogeneous
-        img1_points_hmg = np.concatenate((img1_points, np.ones(shape=(num_corresponding, 1))), axis=1) # N * 3
-        img2_points_hmg = np.concatenate((img2_points, np.ones(shape=(num_corresponding, 1))), axis=1) # N * 3
         
+        num_corresponding = img1_points.shape[0]
+
         # convert to tensor
-        img1_points_hmg = torch.tensor(data=img1_points_hmg, dtype=torch.float32, device=device) # N * 3
-        img2_points_hmg = torch.tensor(data=img2_points_hmg, dtype=torch.float32, device=device) # N * 3
+        img1_points = torch.tensor(data=img1_points, dtype=torch.float32, device=device) # N * 2
+        img2_points = torch.tensor(data=img2_points, dtype=torch.float32, device=device) # N * 2
         camera_1_matrix_tensor = torch.tensor(data=camera_1_matrix, dtype=torch.float32, device=device) # 3 * 3
         camera_2_matrix_tensor = torch.tensor(data=camera_2_matrix, dtype=torch.float32, device=device) # 3 * 3
+
+        # convert points to homogeneous
+        img1_points_hmg = torch.cat((img1_points, torch.ones((num_corresponding, 1), device=device)), dim=1)  # N * 3
+        img2_points_hmg = torch.cat((img2_points, torch.ones((num_corresponding, 1), device=device)), dim=1)  # N * 3
 
         # find local ray direction that passes points in image 1
         # local ray direction = inverse of camera matrix * point on image in homogeneous 
